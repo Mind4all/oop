@@ -10,18 +10,29 @@ final class index
 	 */
 	public function init ()
 	{
-		defined('DS') ? null : define('DS',DIRECTORY_SEPARATOR);
-		header('Content-Type: text/html; charset=utf-8');
-		//
-		define('APP_SCOPE', 1);
-		// include our configfile
-		require_once 'config.php';
-		// other Stuff
+		// Directory seperator
+		if (!defined('DS'))
+		{
+			define('DS',DIRECTORY_SEPARATOR);
+		}
+		// application root
 		if (!defined('ROOT'))
 		{
 			define('ROOT', $_SERVER['DOCUMENT_ROOT'] . DS . basename(__DIR__) . DS);
 		}
+		// out app scope
+		if (!defined ('APP_SCOPE'))
+		{
+			define('APP_SCOPE', 1);
+		}
+		// include our configfile
+		// @TODO read a config.ini and evaluate it
+		require_once 'config.php';
+		// set to utf-8
+		header('Content-Type: text/html; charset=utf-8');
+		// init the session
 		$this->_initSession();
+		// show errors
 		$this->_showErrors();
 	}
 
@@ -34,7 +45,7 @@ final class index
 		spl_autoload_register('index::_autoloadmodel');
 		spl_autoload_register('index::_autoloadcontrol');
 		spl_autoload_register('index::_autoloadview');
-		echo $this->_autoloadmodel('ClassDB');
+		$this->_autoloadmodel('ClassDB');
 	}
 
 	/**
@@ -51,13 +62,13 @@ final class index
 			&& version_compare(PHP_VERSION, 6, '<') ? E_ALL ^ E_STRICT : E_ALL);
 			ini_set('display_errors', 'On'); // show errors
 			ini_set("log_errors", 1);     // switch logging on/off
-			ini_set("error_log", ROOT . "/errorlog.txt");     // logfile
+			ini_set("error_log", ROOT . "errorlog.txt");     // logfile
 		}
 		else
 		{
 			ini_set('display_errors', 'Off'); // show errors
 			ini_set("log_errors", 1);     // switch logging on/off
-			ini_set("error_log", ROOT . "/errorlog.txt");     // logfile
+			ini_set("error_log", ROOT . "errorlog.txt");     // logfile
 		}
 
 	}
@@ -93,9 +104,9 @@ final class index
 	 */
 	protected static function _autoloadmodel($class)
 	{
-		if (is_readable(ROOT . 'classes'.DS.'model'.DS.''.$class.'.php'))
+		if (is_readable(ROOT . 'classes'.DS.'model'.DS.$class.'.php'))
 		{
-			require ROOT . 'classes'.DS.'model'.DS.''.$class.'.php';
+			require ROOT . 'classes'.DS.'model'.DS.$class.'.php';
 		}
 	}
 
@@ -104,9 +115,9 @@ final class index
 	 */
 	protected static function _autoloadcontrol($class)
 	{
-		if (is_readable(ROOT . 'classes'.DS.'control'.DS.''.$class.'.php'))
+		if (is_readable(ROOT . 'classes'.DS.'control'.DS.$class.'.php'))
 		{
-			require ROOT . 'classes'.DS.'control'.DS.''.$class.'.php';
+			require ROOT . 'classes'.DS.'control'.DS.$class.'.php';
 		}
 	}
 
@@ -115,9 +126,9 @@ final class index
 	 */
 	protected static function _autoloadview($class)
 	{
-		if (is_readable(ROOT . 'classes'.DS.'view'.DS.''.$class.'.php'))
+		if (is_readable(ROOT . 'classes'.DS.'view'.DS.$class.'.php'))
 		{
-			require ROOT . 'classes'.DS.'view'.DS.''.$class.'.php';
+			require ROOT . 'classes'.DS.'view'.DS.$class.'.php';
 		}
 	}
 }
