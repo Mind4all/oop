@@ -19,7 +19,7 @@ final class index
 		// other Stuff
 		if (!defined('ROOT'))
 		{
-			define('ROOT', $_SERVER['DOCUMENT_ROOT'] . $_SERVER['REQUEST_URI']);
+			define('ROOT', $_SERVER['DOCUMENT_ROOT'] . DS . basename(__DIR__) . DS);
 		}
 		$this->_initSession();
 		$this->_showErrors();
@@ -34,7 +34,7 @@ final class index
 		spl_autoload_register('index::_autoloadmodel');
 		spl_autoload_register('index::_autoloadcontrol');
 		spl_autoload_register('index::_autoloadview');
-		$this->_autoloadmodel('ClassDB');
+		echo $this->_autoloadmodel('ClassDB');
 	}
 
 	/**
