@@ -20,20 +20,21 @@ final class index
 		{
 			define('ROOT', $_SERVER['DOCUMENT_ROOT'] . DS . basename(__DIR__) . DS);
 		}
-		// out app scope
+		// our app scope
 		if (!defined ('APP_SCOPE'))
 		{
 			define('APP_SCOPE', 1);
 		}
-		// include our configfile
-		// @TODO read a config.ini and evaluate it
-		require_once 'config.php';
 		// set to utf-8
 		header('Content-Type: text/html; charset=utf-8');
 		// init the session
 		$this->_initSession();
 		// show errors
 		$this->_showErrors();
+		// load the required classes
+		spl_autoload_register('index::_autoloadclass');
+		$this->_autoloadclass('ClassConfig');
+		$this->_autoloadclass('ClassDB');
 	}
 
 	/**
@@ -41,13 +42,14 @@ final class index
 	 */
 	public function run ()
 	{
-		// load the required classes
-		spl_autoload_register('index::_autoloadmodel');
-		spl_autoload_register('index::_autoloadcontrol');
-		spl_autoload_register('index::_autoloadview');
-		$this->_autoloadmodel('ClassDB');
+		// we need a configuration for running
+		$conf = new config();
+		// @TODO what else do we need for our application
+
 	}
 
+	
+	
 	/**
 	 * errors are only shown if you connect local
 	 */
@@ -102,33 +104,23 @@ final class index
 	/**
 	 * @param String
 	 */
-	protected static function _autoloadmodel($class)
+	protected static function _autoloadclass($class)
 	{
-		if (is_readable(ROOT . 'classes'.DS.'model'.DS.$class.'.php'))
+		if(is_readable(ROOT . 'classes' . DS . 'model' . DS . $class . '.php'))
 		{
-			require ROOT . 'classes'.DS.'model'.DS.$class.'.php';
+			require ROOT . 'classes' . DS . 'model' . DS . $class . '.php';
 		}
-	}
-
-	/**
-	 * @param String
-	 */
-	protected static function _autoloadcontrol($class)
-	{
-		if (is_readable(ROOT . 'classes'.DS.'control'.DS.$class.'.php'))
+		elseif(is_readable(ROOT . 'classes' . DS . 'control' . DS . $class . '.php'))
 		{
-			require ROOT . 'classes'.DS.'control'.DS.$class.'.php';
+			require ROOT . 'classes' . DS . 'control' . DS . $class . '.php';
 		}
-	}
-
-	/**
-	 * @param String
-	 */
-	protected static function _autoloadview($class)
-	{
-		if (is_readable(ROOT . 'classes'.DS.'view'.DS.$class.'.php'))
+		elseif(is_readable(ROOT . 'classes' . DS . 'view' . DS . $class . '.php'))
 		{
-			require ROOT . 'classes'.DS.'view'.DS.$class.'.php';
+			require ROOT . 'classes' . DS . 'view' . DS . $class . '.php';
+		}
+		else 
+		{
+			die('No suitable class found in the path!<br>');
 		}
 	}
 }
@@ -139,10 +131,15 @@ $index->run();
 
 //Testing below here
 
+echo DB_USER .'<br>';
+
+/*
 $db = new db();
 $db->dbConnect();
 $db->selectDB(DB_NAME);
+*/
 /* prepare SQL statement */
+/*
 $sqlStm = "SELECT
 		*
 		FROM
@@ -154,3 +151,4 @@ while($row = mysql_fetch_assoc($result)){
 		echo $k . ' => ' . $v .'<br>';
 	}
 }
+*/
