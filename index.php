@@ -131,24 +131,40 @@ $index->run();
 
 //Testing below here
 
-echo DB_USER .'<br>';
+try
+{
+	$db = new db();
+}
+catch (Exception $e)
+{
+	echo 'Error: ' . $e;
+}
 
+echo '<hr>';
+$tables = $db->getDbTables(DB_NAME);
+var_dump($tables);
+echo '<hr>fields:<br>';
+$fields = $db->getTableFields(USER_TABLE);
+var_dump($fields);
+echo '<hr>';
+$myarray = $db->sqlQuery($fields, USER_TABLE);
+var_dump($myarray);
+echo '<hr>';
 /*
-$db = new db();
-$db->dbConnect();
-$db->selectDB(DB_NAME);
-*/
-/* prepare SQL statement */
-/*
-$sqlStm = "SELECT
-		*
-		FROM
-		" . USER_TABLE . "";
-$result = $db->sql($sqlStm);
-while($row = mysql_fetch_assoc($result)){
-	foreach($row as $k => $v)
+if($resultat = $db->query('SELECT * FROM user ORDER by id'))
+{
+	echo 'Total results: ' . $resultat->num_rows .'<br>';
+	
+	while ($daten = $resultat->fetch_object())
 	{
-		echo $k . ' => ' . $v .'<br>';
+		foreach ($daten as $key => $val)
+		{
+			echo $key . ' | ' . $val . '<br>';
+		}
 	}
+	
+	echo 'Guck<br>';
 }
 */
+$db->close();
+

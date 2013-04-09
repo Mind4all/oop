@@ -17,10 +17,10 @@ final class config
 		{
 			if (!preg_match('/^#/', $value))
 			{
-				$tempval = preg_split('/,/', trim($value));
+				$tempval = preg_split('/,/', $value);
 				if (!defined($tempval['0']))
 				{
-					define($tempval['0'], $tempval['1']);
+					define(trim($tempval['0']), trim($tempval['1']));
 					$bol = TRUE;
 				}
 			}

@@ -1,43 +1,122 @@
 <?php
 if (!defined('APP_SCOPE')) die('Direct access not allowed!');
-final class db {
-	var $connid;
-	var $res;
+/**
+ * @author markus
+ * do the db stuff with mysqli
+*/
+final class db extends mysqli
+{
 	/**
-	  * @return $connid
-	  */
-	public function dbConnect()
+	 * @param string $host
+	 * @param string $user
+	 * @param string $pass
+	 * @param string $db
+	 */
+	public function __construct()
 	{
-		if(!$this->connid = mysql_connect(DB_SYSTEM, DB_USER, DB_PASS)) {
-			echo "Fehler beim Verbinden...";
+		parent::init();
+
+		if (!parent::options(MYSQLI_INIT_COMMAND, 'SET AUTOCOMMIT = 0'))
+		{
+			die('Setting MYSQLI_INIT_COMMAND failed');
 		}
-		// set the charset to utf-8
-		mysql_set_charset("UTF8", $this->connid);
-		return $this->connid;
+
+		if (!parent::options(MYSQLI_OPT_CONNECT_TIMEOUT, 5))
+		{
+			die('Setting MYSQLI_OPT_CONNECT_TIMEOUT failed');
+		}
+		// the params are the constants we defined earlier
+		if (!parent::real_connect(DB_SYSTEM, DB_USER, DB_PASS, DB_NAME))
+		{
+			die('Connect Error (' . mysqli_connect_errno() . ') '
+					. mysqli_connect_error());
+		}
+		$this->_setUtf8();
+	}
+
+	/**
+	 * set the characterset to utf-8
+	 */
+	private function _setUtf8()
+	{
+		// change character set to utf8
+		if (!$this->set_charset("utf8"))
+		{
+			printf("Error loading character set utf8: %s\n", $this->error);
+		}
+		else
+		{
+			printf("Current character set: %s<br>", $this->character_set_name());
+		}
 	}
 	/**
-	  * @param $db
-	  * @return boolean
-	  */
-	public function selectDB($dbConnect)
+	 * @param string $from
+	 * @return string
+	 * returns a commaseperated string of the available fields
+	 */
+	public function getTableFields($from)
 	{
-		if (!mysql_select_db($dbConnect, $this->connid)) {
-			return false;
-		} else {
-			return true;
+
+		if($result = $this->query('SELECT * FROM ' . $from . ''))
+		{
+			$finfo = $result->fetch_fields();
+			$fields = '';
+			foreach ($finfo as $val) {
+				$fields .= $val->name .', ';			}
+			$result->close();
 		}
+		$fields = mb_substr($fields ,0,-2);
+		return $fields;
 	}
 	/**
-	  * @param $sql
-	  * @return $res
-	  */
-	public function sql($sql)
+	 * @param string $from
+	 * @return array
+	 */
+	public function getDbTables($from)
 	{
-		if (!$this->res = mysql_query($sql, $this->connid)) {
-			return mysql_error();
+		$result = $this->query('SHOW TABLES FROM ' . $from . '');
+		$tables = array();
+		while ($daten = $result->fetch_object())
+		{
+			foreach ($daten as $key => $val)
+			{
+				array_push($tables, $val);
+			}
+			
 		}
-		return $this->res;
+		$result->close();
+		return $tables;
 	}
+	/**
+	 * @param string $what
+	 * @param string $from
+	 * @return array
+	 */
+	public function sqlQuery($what, $from)
+	{
+		// @TODO secure this function
+		$data = array();
+		echo 'SELECT ' . $what . ' FROM ' . $from . '' .'<br>';
+		if($result = $this->query('SELECT ' . $what . ' FROM ' . $from . ''))
+		{
+			$tmp = array();
+			$int = 0;
+			while ($daten = $result->fetch_object())
+			{
+
+				foreach ($daten as $key => $val)
+				{
+					$tmp[$key] = $val;
+				}
+				$data[$int]= $tmp;
+				$int++;
+			}
+
+		}
+		$result->close();
+		return $data;
+	}
+	// @TODO evaluate!!
 }
-/* filelocation: classes/model/ClassDB.php */
-/* end of file */
+// filelocation: classes/model/ClassDB.php
+// end of file
