@@ -35,6 +35,7 @@ final class index
 		spl_autoload_register('index::_autoloadclass');
 		$this->_autoloadclass('ClassConfig');
 		$this->_autoloadclass('ClassDB');
+		$this->_autoloadclass('ClassDbWrapper');
 	}
 
 	/**
@@ -129,16 +130,7 @@ $index = new index();
 $index->init();
 $index->run();
 
-//Testing below here
-
-try
-{
-	$db = new db();
-}
-catch (Exception $e)
-{
-	echo 'Error: ' . $e;
-}
+$db = new dbwrapper();
 
 echo '<hr>';
 $tables = $db->getDbTables(DB_NAME);
@@ -150,21 +142,3 @@ echo '<hr>';
 $myarray = $db->sqlQuery($fields, USER_TABLE);
 var_dump($myarray);
 echo '<hr>';
-/*
-if($resultat = $db->query('SELECT * FROM user ORDER by id'))
-{
-	echo 'Total results: ' . $resultat->num_rows .'<br>';
-	
-	while ($daten = $resultat->fetch_object())
-	{
-		foreach ($daten as $key => $val)
-		{
-			echo $key . ' | ' . $val . '<br>';
-		}
-	}
-	
-	echo 'Guck<br>';
-}
-*/
-$db->close();
-
