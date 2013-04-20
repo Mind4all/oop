@@ -75,36 +75,29 @@ final class dbwrapper
 		$db = new db();
 		// @TODO secure this function
 		$data = array();
-
-		echo 'SELECT ' . $what . ' FROM ' . $from . '' .'<br>';
 		$stmt = $db->stmt_init();
-		if (!($stmt = $db->prepare('SELECT ' . $what . ' FROM ' . $from . ' WHERE ID=?')))
+		if (!($stmt = $db->prepare('SELECT ' . $what . ' FROM ' . $from . '')))
 		{
 			echo "Prepare failed: (" . $db->errno . ") " . $db->error;
 		}
 
-		
-		$cols = explode(',', $what);
-		$i = 0;
-		foreach($cols as $col)
+		$stmt->execute();
+		$meta = $stmt->result_metadata();
+		while ($field = $meta->fetch_field())
 		{
-			if(!$stmt->bind_param("s", $col))
-			{
-				echo "bind failed: (" . $db->errno . ") " . $db->error;
-			}
-			$stmt->execute();
-			$result = $stmt->get_result();
-var_dump($result);
-			echo $i++ .'<br>';
-			while ($row = $result->fetch_array(MYSQLI_NUM))
-			{
-				foreach ($row as $r)
-				{
-					print "$r ";
-				}
-				print "<br>";
-			}
+			$params[] = &$row[$field->name];
 		}
+		
+		call_user_func_array(array($stmt, 'bind_result'), $params);
+		
+		while ($stmt->fetch()) {
+			foreach($row as $key => $val)
+			{
+				$c[$key] = $val;
+			}
+			$result[] = $c;
+		}
+		
+		return $result;
 	}
-	// @TODO evaluate!!
 }

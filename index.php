@@ -126,19 +126,14 @@ final class index
 	}
 }
 // init an run our application
+//@TODO try ... catch!
 $index = new index();
 $index->init();
 $index->run();
 
 $db = new dbwrapper();
-
-echo '<hr>';
 $tables = $db->getDbTables(DB_NAME);
-var_dump($tables);
-echo '<hr>fields:<br>';
 $fields = $db->getTableFields(USER_TABLE);
-var_dump($fields);
-echo '<hr>';
+$fields_arr = explode(',', $fields);
 $myarray = $db->sqlQuery($fields, USER_TABLE);
 var_dump($myarray);
-echo '<hr>';
