@@ -78,7 +78,18 @@ final class dbwrapper
 	 */
 	public function sqlQuery($what, $from)
 	{
-		$db = new db();
+		$db = $this->openConnection();
+		// check if mysql native driver is enabled
+		$mysqlnd = function_exists('mysqli_fetch_all');
+		
+		if ($mysqlnd) {
+			echo 'mysqlnd enabled!<br>';
+		}
+		else 
+		{
+			echo 'working with libmysql!<br>';
+		}
+		
 		// @TODO secure this function check $what!!
 		$data = array();
 		$stmt = $db->stmt_init();
