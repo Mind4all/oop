@@ -1,4 +1,9 @@
 <?php
+if (!defined('APP_SCOPE')) die('Direct access not allowed!');
+/**
+ * @author eMKa
+ * wrapps the ClassDB to keep the code more clean
+ */
 final class dbwrapper
 {
 	private function openConnection()
@@ -73,7 +78,7 @@ final class dbwrapper
 	public function sqlQuery($what, $from)
 	{
 		$db = new db();
-		// @TODO secure this function
+		// @TODO secure this function check $what!!
 		$data = array();
 		$stmt = $db->stmt_init();
 		if (!($stmt = $db->prepare('SELECT ' . $what . ' FROM ' . $from . '')))
@@ -90,7 +95,8 @@ final class dbwrapper
 		
 		call_user_func_array(array($stmt, 'bind_result'), $params);
 		
-		while ($stmt->fetch()) {
+		while ($stmt->fetch())
+		{
 			foreach($row as $key => $val)
 			{
 				$c[$key] = $val;

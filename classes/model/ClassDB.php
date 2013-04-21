@@ -1,7 +1,7 @@
 <?php
 if (!defined('APP_SCOPE')) die('Direct access not allowed!');
 /**
- * @author markus
+ * @author eMKa
  * do the db stuff with mysqli
 */
 final class db extends mysqli
