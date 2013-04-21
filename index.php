@@ -158,7 +158,7 @@ try
 	catch(appexception $e)
 	{
 		// echo the original exception
-		echo 'org message: ' . $e->errorMessage() . '<br>';
+		echo 'org message: ' . $e->privateErrorMessage() . '<br>';
 		//re-throw exception
 		throw new appexception($email);
 	}

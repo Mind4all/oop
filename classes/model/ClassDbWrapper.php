@@ -68,6 +68,7 @@ final class dbwrapper
 
 		}
 		$result->close();
+		$this->closeConnection($db);
 		return $tables;
 	}
 	/**
@@ -103,7 +104,9 @@ final class dbwrapper
 			}
 			$result[] = $c;
 		}
-		
+		$this->closeConnection($db);
 		return $result;
 	}
 }
+// filelocation: classes/model/ClassDbWrapper.php
+// end of file

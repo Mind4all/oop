@@ -7,45 +7,42 @@ if (!defined('APP_SCOPE')) die('Direct access not allowed!');
 final class db extends mysqli
 {
 	/**
-	 * @param string $host
-	 * @param string $user
-	 * @param string $pass
-	 * @param string $db
 	 */
 	public function __construct()
 	{
 		parent::init();
 
-		if (!parent::options(MYSQLI_INIT_COMMAND, 'SET AUTOCOMMIT = 0'))
+		try
 		{
-			die('Setting MYSQLI_INIT_COMMAND failed');
+			parent::options(MYSQLI_INIT_COMMAND, 'SET AUTOCOMMIT = 0');
 		}
-
-		if (!parent::options(MYSQLI_OPT_CONNECT_TIMEOUT, 5))
+		catch (appexception $e)
 		{
-			die('Setting MYSQLI_OPT_CONNECT_TIMEOUT failed');
+			echo 'Setting MYSQLI_INIT_COMMAND failed: ' . $e->privateErrorMessage(); 
+		}
+		
+		try
+		{
+			parent::options(MYSQLI_OPT_CONNECT_TIMEOUT, 5);
+		}
+		catch (appexception $e)
+		{
+			echo 'Setting MYSQLI_OPT_CONNECT_TIMEOUT failed: ' . $e->privateErrorMessage();
 		}
 		// the params are the constants we defined earlier
-		if (!parent::real_connect(DB_SYSTEM, DB_USER, DB_PASS, DB_NAME))
+		try
 		{
-			die('Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
+			parent::real_connect(DB_SYSTEM, DB_USER, DB_PASS, DB_NAME);
 		}
-		$this->_setUtf8();
-	}
-
-	/**
-	 * set the characterset to utf-8
-	 */
-	private function _setUtf8()
-	{
-		// change character set to utf8
-		if (!$this->set_charset("utf8"))
+		catch (appexception $e)
 		{
-			printf("Error loading character set utf8: %s\n", $this->error);
+			echo 'Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error() . $e->privateErrorMessage();
 		}
-		else
-		{
-			printf("Current character set: %s<br>", $this->character_set_name());
+		// set charset to utf8
+		try {
+			$this->set_charset("utf8");
+		} catch (appexception $e) {
+			echo 'Error loading character set utf8: ' . $e->privateErrorMessage();
 		}
 	}
 }
