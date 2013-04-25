@@ -83,7 +83,7 @@ final class dbwrapper
 			echo "Prepare failed: (" . $db->errno . ") " . $db->error;
 		}
 
-		
+
 		$cols = explode(',', $what);
 		$i = 0;
 		foreach($cols as $col)
@@ -94,7 +94,7 @@ final class dbwrapper
 			}
 			$stmt->execute();
 			$result = $stmt->get_result();
-var_dump($result);
+			var_dump($result);
 			echo $i++ .'<br>';
 			while ($row = $result->fetch_array(MYSQLI_NUM))
 			{
