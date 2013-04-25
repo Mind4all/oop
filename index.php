@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Klaßen
+ * @author eMKa
  * main application class
  */
 final class index
@@ -33,9 +33,11 @@ final class index
 		$this->_showErrors();
 		// load the required classes
 		spl_autoload_register('index::_autoloadclass');
+		// @TODO pass an array with all needed classes maybe write a function wich looks for all classes
 		$this->_autoloadclass('ClassConfig');
 		$this->_autoloadclass('ClassDB');
 		$this->_autoloadclass('ClassDbWrapper');
+		$this->_autoloadclass('ClassAppexception');
 	}
 
 	/**
@@ -49,8 +51,6 @@ final class index
 
 	}
 
-	
-	
 	/**
 	 * errors are only shown if you connect local
 	 */
@@ -119,26 +119,53 @@ final class index
 		{
 			require ROOT . 'classes' . DS . 'view' . DS . $class . '.php';
 		}
-		else 
+		else
 		{
 			die('No suitable class found in the path!<br>');
 		}
 	}
 }
 // init an run our application
+//@TODO try ... catch!
 $index = new index();
 $index->init();
 $index->run();
-
+// testing below
+// db testing
 $db = new dbwrapper();
-
-echo '<hr>';
+// get the available tables in db
 $tables = $db->getDbTables(DB_NAME);
-var_dump($tables);
-echo '<hr>fields:<br>';
+// get available fields in USER_TABLE
 $fields = $db->getTableFields(USER_TABLE);
-var_dump($fields);
-echo '<hr>';
+// get a result
 $myarray = $db->sqlQuery($fields, USER_TABLE);
 var_dump($myarray);
-echo '<hr>';
+
+// try the ClassAppexception
+$email = "someone@example.com";
+
+try
+{
+	try
+	{
+		//check for "example" in mail address
+		if(strpos($email, "example") !== FALSE)
+		{
+			//throw exception if email is not valid
+			throw new appexception($email);
+		}
+	}
+	catch(appexception $e)
+	{
+		// echo the original exception
+		echo 'org message: ' . $e->privateErrorMessage() . '<br>';
+		//re-throw exception
+		throw new appexception($email);
+	}
+}
+
+catch (appexception $e)
+{
+	//display custom message
+	echo 'custom message: ' . $e->publicErrorMessage() .'<br>';
+}
